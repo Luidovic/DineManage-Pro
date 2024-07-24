@@ -3,6 +3,8 @@ package com.project.ManageDinePro.restController;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,12 +45,11 @@ public class CustomerRestController {
 
         // Check for missing fields
         if (req.get("customer_id") == null || req.get("customer_username") == null || req.get("customer_name") == null
-                ||
-                req.get("customer_lastname") == null || req.get("customer_dateOfBirth") == null
-                || req.get("customer_gender") == null ||
-                req.get("customer_phonenumber") == null || req.get("customer_email") == null
-                || req.get("customer_reservationid") == null ||
-                req.get("customer_orderid") == null || req.get("customer_billid") == null) {
+                || req.get("customer_lastname") == null || req.get("customer_dateOfBirth") == null
+                || req.get("customer_gender") == null || req.get("customer_phonenumber") == null
+                || req.get("customer_email") == null || req.get("customer_reservationid") == null
+                || req.get("customer_orderid") == null || req.get("customer_billid") == null
+                || req.get("customer_preference") == null) {
 
             objectNode.put("message", "Missing fields in the request");
             return ResponseEntity.badRequest().body(objectNode);
@@ -75,6 +76,18 @@ public class CustomerRestController {
         String customer_orderid = req.get("customer_orderid").asText();
         String customer_billid = req.get("customer_billid").asText();
 
+        JsonNode preferenceNode = req.get("customer_preference");
+        List<String> customer_preference = new ArrayList<>();
+
+        if (preferenceNode.isArray()) {
+            for (JsonNode pref : preferenceNode) {
+                customer_preference.add(pref.asText());
+            }
+        } else {
+            objectNode.put("message", "Preference must be a list of strings");
+            return ResponseEntity.badRequest().body(objectNode);
+        }
+
         // Check if customer already exists
         if (customerService.customerExists(customer_id)) {
             objectNode.put("message", "Customer already exists");
@@ -83,7 +96,7 @@ public class CustomerRestController {
 
         Customer customer = new Customer(customer_id, customer_username, customer_name, customer_lastname,
                 customer_dateOfBirth, customer_gender, customer_phonenumber, customer_email,
-                customer_reservationid, customer_orderid, customer_billid);
+                customer_reservationid, customer_orderid, customer_billid, customer_preference);
 
         customerService.saveCustomer(customer);
 

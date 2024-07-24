@@ -4,6 +4,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import java.time.LocalDate;
 import javax.validation.constraints.*;
+import java.util.*;
 
 @Document(collection = "Customer")
 public class Customer {
@@ -42,6 +43,9 @@ public class Customer {
 
     @NotBlank(message = "Bill ID is mandatory")
     private String customer_billid;
+
+    @NotBlank(message = "Preference is mandatory")
+    private List<String> customer_preference;
 
     public String getCustomer_id() {
         return customer_id;
@@ -131,9 +135,25 @@ public class Customer {
         this.customer_billid = customer_billid;
     }
 
-    public Customer(String customer_id, String customer_username, String customer_name, String customer_lastname,
-            LocalDate customer_dateOfBirth, String customer_gender, String customer_phonenumber, String customer_email,
-            String customer_reservationid, String customer_orderid, String customer_billid) {
+    public List<String> getCustomer_preference() {
+        return customer_preference;
+    }
+
+    public void setCustomer_preference(List<String> customer_preference) {
+        this.customer_preference = customer_preference;
+    }
+
+    public Customer(String customer_id, @NotBlank(message = "Username is mandatory") String customer_username,
+            @NotBlank(message = "First Name is mandatory") String customer_name,
+            @NotBlank(message = "Last Name is mandatory") String customer_lastname,
+            @NotNull(message = "Date of birth is mandatory") LocalDate customer_dateOfBirth,
+            @NotBlank(message = "Gender is mandatory") String customer_gender,
+            @NotBlank(message = "Phone number is mandatory") @Pattern(regexp = "\\+?[0-9. ()-]{7,25}", message = "Invalid phone number") String customer_phonenumber,
+            @NotBlank(message = "Email is mandatory") @Email(message = "Email should be valid") String customer_email,
+            @NotBlank(message = "Reservation ID is mandatory") String customer_reservationid,
+            @NotBlank(message = "Order ID is mandatory") String customer_orderid,
+            @NotBlank(message = "Bill ID is mandatory") String customer_billid,
+            @NotBlank(message = "Preference is mandatory") List<String> customer_preference) {
         this.customer_id = customer_id;
         this.customer_username = customer_username;
         this.customer_name = customer_name;
@@ -145,6 +165,7 @@ public class Customer {
         this.customer_reservationid = customer_reservationid;
         this.customer_orderid = customer_orderid;
         this.customer_billid = customer_billid;
+        this.customer_preference = customer_preference;
     }
 
 }
