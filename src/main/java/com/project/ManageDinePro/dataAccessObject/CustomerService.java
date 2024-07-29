@@ -34,4 +34,9 @@ public class CustomerService {
         return mongoTemplate.exists(query, (Class<?>) Customer.class);
     }
 
+    public Customer getCustomerById(String customer_id) {
+        return customerRepo.findById(customer_id).orElse(null);
+    }
+    
+
 }

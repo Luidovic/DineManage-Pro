@@ -8,10 +8,9 @@ import javax.validation.constraints.NotNull;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-
 @Document(collection = "Reservation")
 public class Reservation {
-    
+
     @Id
     private String reservation_id;
     @NotBlank(message = "Reservation date is required")
@@ -28,6 +27,9 @@ public class Reservation {
 
     @NotBlank(message = "Reservation note is required")
     private String reservation_note;
+
+    public Reservation() {
+    }
 
     public Reservation(String reservation_id,
             @NotBlank(message = "Reservation date is required") LocalDate reservation_date,
@@ -90,5 +92,5 @@ public class Reservation {
     public void setReservation_note(String reservation_note) {
         this.reservation_note = reservation_note;
     }
-    
+
 }
