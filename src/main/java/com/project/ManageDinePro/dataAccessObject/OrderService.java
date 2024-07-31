@@ -1,16 +1,35 @@
 package com.project.ManageDinePro.dataAccessObject;
 
-import org.springframework.data.mongodb.core.MongoTemplate;
+import java.util.List;
+
 import org.springframework.stereotype.Service;
+
+import com.project.ManageDinePro.entity.Order;
 
 @Service
 public class OrderService {
 
     private OrderRepo orderRepo;
-    private MongoTemplate mongoTemplate;
 
-    public OrderService(OrderRepo orderRepo, MongoTemplate mongoTemplate) {
+    public OrderService(OrderRepo orderRepo) {
         this.orderRepo = orderRepo;
-        this.mongoTemplate = mongoTemplate;
+    }
+
+    public Order createOrder(Order order) {
+        return orderRepo.save(order);
+    }
+
+    public List<Order> getAllOrders() {
+        return orderRepo.findAll();
+    }
+
+    public void updateOrder(Order order) {
+        Order existingOrder = orderRepo.findById(order.getOrder_id()).orElse(null);
+        if (existingOrder != null) {
+            existingOrder.setOrder_status("done");
+            orderRepo.save(existingOrder);
+        } else {
+            throw new IllegalArgumentException("Order not found");
+        }
     }
 }

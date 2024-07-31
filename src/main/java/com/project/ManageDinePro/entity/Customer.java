@@ -2,6 +2,9 @@ package com.project.ManageDinePro.entity;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
+import org.springframework.data.mongodb.core.mapping.FieldType;
+
 import java.time.LocalDate;
 import javax.validation.constraints.*;
 import java.util.*;
@@ -35,17 +38,43 @@ public class Customer {
     @Email(message = "Email should be valid")
     private String customer_email;
 
-    @NotBlank(message = "Reservation ID is mandatory")
     private String customer_reservationid;
 
-    @NotBlank(message = "Order ID is mandatory")
     private String customer_orderid;
 
-    @NotBlank(message = "Bill ID is mandatory")
     private String customer_billid;
 
-    @NotBlank(message = "Preference is mandatory")
     private List<String> customer_preference;
+
+    @Field(targetType = FieldType.BINARY)
+    private byte[] customer_image;
+
+    public Customer(String customer_id, @NotBlank(message = "Username is mandatory") String customer_username,
+            @NotBlank(message = "First Name is mandatory") String customer_name,
+            @NotBlank(message = "Last Name is mandatory") String customer_lastname,
+            @NotNull(message = "Date of birth is mandatory") LocalDate customer_dateOfBirth,
+            @NotBlank(message = "Gender is mandatory") String customer_gender,
+            @NotBlank(message = "Phone number is mandatory") @Pattern(regexp = "\\+?[0-9. ()-]{7,25}", message = "Invalid phone number") String customer_phonenumber,
+            @NotBlank(message = "Email is mandatory") @Email(message = "Email should be valid") String customer_email,
+            byte[] customer_image) {
+        this.customer_id = customer_id;
+        this.customer_username = customer_username;
+        this.customer_name = customer_name;
+        this.customer_lastname = customer_lastname;
+        this.customer_dateOfBirth = customer_dateOfBirth;
+        this.customer_gender = customer_gender;
+        this.customer_phonenumber = customer_phonenumber;
+        this.customer_email = customer_email;
+        this.customer_image = customer_image;
+    }
+
+    public byte[] getCustomer_image() {
+        return customer_image;
+    }
+
+    public void setCustomer_image(byte[] customer_image) {
+        this.customer_image = customer_image;
+    }
 
     public String getCustomer_id() {
         return customer_id;
@@ -140,31 +169,6 @@ public class Customer {
     }
 
     public void setCustomer_preference(List<String> customer_preference) {
-        this.customer_preference = customer_preference;
-    }
-
-    public Customer(String customer_id, @NotBlank(message = "Username is mandatory") String customer_username,
-            @NotBlank(message = "First Name is mandatory") String customer_name,
-            @NotBlank(message = "Last Name is mandatory") String customer_lastname,
-            @NotNull(message = "Date of birth is mandatory") LocalDate customer_dateOfBirth,
-            @NotBlank(message = "Gender is mandatory") String customer_gender,
-            @NotBlank(message = "Phone number is mandatory") @Pattern(regexp = "\\+?[0-9. ()-]{7,25}", message = "Invalid phone number") String customer_phonenumber,
-            @NotBlank(message = "Email is mandatory") @Email(message = "Email should be valid") String customer_email,
-            @NotBlank(message = "Reservation ID is mandatory") String customer_reservationid,
-            @NotBlank(message = "Order ID is mandatory") String customer_orderid,
-            @NotBlank(message = "Bill ID is mandatory") String customer_billid,
-            @NotBlank(message = "Preference is mandatory") List<String> customer_preference) {
-        this.customer_id = customer_id;
-        this.customer_username = customer_username;
-        this.customer_name = customer_name;
-        this.customer_lastname = customer_lastname;
-        this.customer_dateOfBirth = customer_dateOfBirth;
-        this.customer_gender = customer_gender;
-        this.customer_phonenumber = customer_phonenumber;
-        this.customer_email = customer_email;
-        this.customer_reservationid = customer_reservationid;
-        this.customer_orderid = customer_orderid;
-        this.customer_billid = customer_billid;
         this.customer_preference = customer_preference;
     }
 

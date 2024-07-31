@@ -1,12 +1,15 @@
 package com.project.ManageDinePro.dataAccessObject;
 
+import java.io.IOException;
 import java.util.List;
 
 import org.springframework.data.mongodb.core.query.Query;
-
+import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+
 import com.project.ManageDinePro.entity.Customer;
 
 @Service
@@ -37,6 +40,14 @@ public class CustomerService {
     public Customer getCustomerById(String customer_id) {
         return customerRepo.findById(customer_id).orElse(null);
     }
-    
+
+    public void saveCustomerImage(String customerId, MultipartFile imageFile) throws IOException {
+        byte[] imageBytes = imageFile.getBytes();
+
+        // Find the customer by ID and update the image field
+        Query query = new Query(Criteria.where("customer_id").is(customerId));
+        Update update = new Update().set("customer_image", imageBytes);
+        mongoTemplate.updateFirst(query, update, Customer.class);
+    }
 
 }

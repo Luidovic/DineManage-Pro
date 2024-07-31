@@ -1,5 +1,6 @@
 package com.project.ManageDinePro.restController;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
@@ -11,10 +12,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
+
 import com.project.ManageDinePro.dataAccessObject.CustomerService;
 import com.project.ManageDinePro.entity.Customer;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -37,56 +42,42 @@ public class CustomerRestController {
         return customerService.getAllEntities();
     }
 
-    @PutMapping("/addcustomer")
-    public ResponseEntity<ObjectNode> addCustomer(@RequestBody JsonNode req) {
+    @PostMapping("/addcustomer")
+    public ResponseEntity<ObjectNode> addCustomer(
+            @RequestParam("customer_id") String customer_id,
+            @RequestParam("customer_username") String customer_username,
+            @RequestParam("customer_name") String customer_name,
+            @RequestParam("customer_lastname") String customer_lastname,
+            @RequestParam("customer_dateOfBirth") String customer_dateOfBirth,
+            @RequestParam("customer_gender") String customer_gender,
+            @RequestParam("customer_phonenumber") String customer_phonenumber,
+            @RequestParam("customer_email") String customer_email,
+            @RequestParam("customer_image") MultipartFile customer_image) throws IOException {
 
         ObjectMapper objectMapper = new ObjectMapper();
         ObjectNode objectNode = objectMapper.createObjectNode();
 
         // Check for missing fields
-        if (req.get("customer_id") == null || req.get("customer_username") == null || req.get("customer_name") == null
-                || req.get("customer_lastname") == null || req.get("customer_dateOfBirth") == null
-                || req.get("customer_gender") == null || req.get("customer_phonenumber") == null
-                || req.get("customer_email") == null || req.get("customer_reservationid") == null
-                || req.get("customer_orderid") == null || req.get("customer_billid") == null
-                || req.get("customer_preference") == null) {
+        if (customer_id == null || customer_username == null || customer_name == null
+                || customer_lastname == null || customer_dateOfBirth == null
+                || customer_gender == null || customer_phonenumber == null
+                || customer_email == null || customer_image == null) {
 
             objectNode.put("message", "Missing fields in the request");
             return ResponseEntity.badRequest().body(objectNode);
         }
 
-        String customer_id = req.get("customer_id").asText();
-        String customer_username = req.get("customer_username").asText();
-        String customer_name = req.get("customer_name").asText();
-        String customer_lastname = req.get("customer_lastname").asText();
-
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        LocalDate customer_dateOfBirth;
+        LocalDate customer_dateOfBirthParsed;
         try {
-            customer_dateOfBirth = LocalDate.parse(req.get("customer_dateOfBirth").asText(), formatter);
+            customer_dateOfBirthParsed = LocalDate.parse(customer_dateOfBirth, formatter);
         } catch (DateTimeParseException e) {
             objectNode.put("message", "Invalid date format");
             return ResponseEntity.badRequest().body(objectNode);
         }
 
-        String customer_gender = req.get("customer_gender").asText();
-        String customer_phonenumber = req.get("customer_phonenumber").asText();
-        String customer_email = req.get("customer_email").asText();
-        String customer_reservationid = req.get("customer_reservationid").asText();
-        String customer_orderid = req.get("customer_orderid").asText();
-        String customer_billid = req.get("customer_billid").asText();
-
-        JsonNode preferenceNode = req.get("customer_preference");
-        List<String> customer_preference = new ArrayList<>();
-
-        if (preferenceNode.isArray()) {
-            for (JsonNode pref : preferenceNode) {
-                customer_preference.add(pref.asText());
-            }
-        } else {
-            objectNode.put("message", "Preference must be a list of strings");
-            return ResponseEntity.badRequest().body(objectNode);
-        }
+        // Convert image to byte array
+        byte[] customer_imageBytes = customer_image.getBytes();
 
         // Check if customer already exists
         if (customerService.customerExists(customer_id)) {
@@ -95,8 +86,8 @@ public class CustomerRestController {
         }
 
         Customer customer = new Customer(customer_id, customer_username, customer_name, customer_lastname,
-                customer_dateOfBirth, customer_gender, customer_phonenumber, customer_email,
-                customer_reservationid, customer_orderid, customer_billid, customer_preference);
+                customer_dateOfBirthParsed, customer_gender, customer_phonenumber, customer_email,
+                customer_imageBytes);
 
         customerService.saveCustomer(customer);
 

@@ -8,7 +8,7 @@ import javax.validation.constraints.NotBlank;
 
 @Document(collection = "Order")
 public class Order {
-    
+
     @Id
     private String order_id;
     @NotBlank(message = "Order items cannot be blank")
@@ -98,6 +98,9 @@ public class Order {
         this.order_time = order_time;
         this.order_customer_id = order_customer_id;
         this.order_notes = order_notes;
+    }
+
+    public Order() {
     }
 
 }
